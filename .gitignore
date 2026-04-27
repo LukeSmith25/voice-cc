@@ -1,0 +1,19 @@
+# runtime
+*.pid
+*.wav
+*.mp3
+*.log
+
+# OS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# editor
+.vscode/
+.idea/
+*.swp
