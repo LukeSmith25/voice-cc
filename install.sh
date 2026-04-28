@@ -4,16 +4,21 @@ set -euo pipefail
 
 REPO_DIR=$(cd "$(dirname "$0")" && pwd)
 HOOKS_DIR=$HOME/.claude/voice-cc/hooks
+COMMANDS_DIR=$HOME/.claude/commands
 DATA_DIR=$HOME/.claude-data/voice-cc
 HS_DIR=$HOME/.hammerspoon
 
 echo "==> Creating directories"
-mkdir -p "$HOOKS_DIR" "$DATA_DIR"/{log,recordings,fixtures} "$HS_DIR"
+mkdir -p "$HOOKS_DIR" "$COMMANDS_DIR" "$DATA_DIR"/{log,recordings,fixtures} "$HS_DIR"
 
 echo "==> Installing hook scripts → $HOOKS_DIR"
 cp "$REPO_DIR"/hooks/*.sh "$HOOKS_DIR/"
 cp "$REPO_DIR"/hooks/*.py "$HOOKS_DIR/"
 chmod +x "$HOOKS_DIR"/*.sh "$HOOKS_DIR"/*.py
+
+echo "==> Installing slash command → $COMMANDS_DIR/voice.sh"
+cp "$REPO_DIR"/commands/voice.sh "$COMMANDS_DIR/voice.sh"
+chmod +x "$COMMANDS_DIR/voice.sh"
 
 echo "==> Installing Hammerspoon config → $HS_DIR"
 cp "$REPO_DIR"/hammerspoon/voice-cc.lua "$HS_DIR/"
@@ -30,6 +35,7 @@ cat <<'EOF'
 
 ✓ Files installed:
    ~/.claude/voice-cc/hooks/
+   ~/.claude/commands/voice.sh
    ~/.hammerspoon/voice-cc.lua
    ~/.hammerspoon/init.lua (require added)
 
@@ -60,14 +66,25 @@ cat <<'EOF'
        }
      ]
 
-5. (Recommended) Add Voice Mode rule to your global ~/.claude/CLAUDE.md:
+5. Register /voice slash command — merge into existing top-level `commands` block in ~/.claude/settings.json:
+
+     "commands": {
+       "voice": {
+         "command": "~/.claude/commands/voice.sh",
+         "description": "Toggle voice-cc TTS (on/off/toggle/status/stop)"
+       }
+     }
+
+   Then restart Claude Code so it picks up the new command.
+
+6. (Recommended) Add Voice Mode rule to your global ~/.claude/CLAUDE.md:
 
      ## Voice Mode (voice-cc)
      - Wrap your end-of-turn summary in `<say>...</say>` tags.
      - Make the summary stand alone — no references to "this response".
      - Aim for one sentence. Omit if no useful audio summary.
 
-6. (Optional) ElevenLabs streaming TTS — add to ~/.zshrc and reload:
+7. (Optional) ElevenLabs streaming TTS — add to ~/.zshrc and reload:
 
      export ELEVENLABS_API_KEY="sk_..."
      export VOICE_CC_TTS=elevenlabs

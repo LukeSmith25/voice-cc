@@ -14,7 +14,8 @@ LOG=$HOME/.claude-data/voice-cc/log/hook.log
 mkdir -p "$(dirname "$LOG")"
 echo "[$(date -Iseconds)] on-stop fired" >> "$LOG"
 
-[ "${VOICE_CC_ENABLED:-1}" = "1" ] || { echo "[$(date -Iseconds)] disabled" >> "$LOG"; exit 0; }
+[ "${VOICE_CC_ENABLED:-1}" = "1" ] || { echo "[$(date -Iseconds)] disabled (env)" >> "$LOG"; exit 0; }
+[ ! -f "$HOME/.claude-data/voice-cc/disabled" ] || { echo "[$(date -Iseconds)] disabled (flag)" >> "$LOG"; exit 0; }
 
 PAYLOAD=$(cat)
 TEXT=$(printf '%s' "$PAYLOAD" | python3 "$HOME/.claude/voice-cc/hooks/extract.py" 2>>"$LOG")

@@ -40,9 +40,12 @@ The installer copies hook scripts into `~/.claude/voice-cc/hooks/` and the Hamme
 | Talk | Hold **Ctrl+Option+Space**, speak, release |
 | Listen | Every assistant turn's `<say>` content (or last paragraph) is read aloud |
 | Interrupt | Press PTT during TTS playback — kills the audio instantly |
-| Disable for one session | `export VOICE_CC_ENABLED=0` |
+| Toggle TTS | `/voice` (also: `/voice on`, `/voice off`, `/voice status`, `/voice stop`) |
+| Disable for one session | `export VOICE_CC_ENABLED=0` before launching `claude` |
 | Disable PTT | Hammerspoon menu → Disable Hammerspoon |
 | Disable permanently | Comment the Stop hook entry in `~/.claude/settings.json` |
+
+**Toggle mechanics:** `/voice off` writes a sentinel file at `~/.claude-data/voice-cc/disabled`. The Stop hook short-circuits when present. Survives across sessions and CC restarts. `/voice on` removes the file. The env var is independent and useful when you want a single session muted from launch.
 
 ## ElevenLabs upgrade
 
