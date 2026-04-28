@@ -3,6 +3,13 @@
 # Detached subshell so the hook returns immediately and CC isn't blocked.
 set -u
 
+# Load voice-cc env from ~/.zshrc if not already in process env. Lets users
+# change ELEVENLABS_API_KEY / VOICE_CC_TTS / VOICE_CC_VOICE_ID without
+# restarting claude. Cherry-picks only voice-cc-related exports (safe in bash).
+if [ -z "${VOICE_CC_TTS:-}" ] && [ -f "$HOME/.zshrc" ]; then
+  eval "$(grep -E '^export (ELEVENLABS|VOICE_CC)' "$HOME/.zshrc" 2>/dev/null)" || true
+fi
+
 LOG=$HOME/.claude-data/voice-cc/log/hook.log
 mkdir -p "$(dirname "$LOG")"
 echo "[$(date -Iseconds)] on-stop fired" >> "$LOG"
