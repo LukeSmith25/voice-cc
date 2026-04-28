@@ -63,18 +63,19 @@ def last_assistant_text(p: Path) -> str:
 
 
 def filter_for_speech(text: str) -> str:
-    # Strip code first so <say> appearing inside example code doesn't get extracted
+    # Pre-clean: strip both code-block and inline-code so accidental <say> mentions
+    # (when Claude is explaining the syntax in chat) don't trigger marker matching.
     text = CODE_FENCE.sub("", text)
-    # Marker-driven path: if Claude wrote <say>...</say>, that's authoritative
+    text = INLINE_CODE.sub("", text)
+    # Marker-driven path: standalone <say>...</say> is authoritative.
     matches = [m.strip() for m in SAY_TAG.findall(text) if m.strip()]
     if matches:
         return " ".join(matches)
-    # Fallback: last-paragraph heuristic with the rest of the filters
+    # Fallback: last-paragraph heuristic with the rest of the filters.
     text = INSIGHT.sub("", text)
     text = TOOL_LINE.sub("", text)
     text = TABLE_ROW.sub("", text)
     text = LINK.sub(r"\1", text)
-    text = INLINE_CODE.sub("", text)
     text = HEADER.sub("", text)
     text = LIST_ITEM.sub("", text)
     text = re.sub(r"\n\s*\n+", "\n\n", text).strip()
