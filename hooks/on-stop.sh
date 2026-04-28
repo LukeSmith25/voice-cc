@@ -18,5 +18,7 @@ if [ -z "$TEXT" ]; then
 fi
 
 echo "[$(date -Iseconds)] speaking: ${TEXT:0:80}" >> "$LOG"
-( printf '%s' "$TEXT" | "$HOME/.claude/voice-cc/hooks/tts.sh" </dev/null >/dev/null 2>&1 & )
+# Group the pipeline so </dev/null applies to the group's stdin (which printf
+# ignores), not to tts.sh's stdin (which must come from the pipe).
+( { printf '%s' "$TEXT" | "$HOME/.claude/voice-cc/hooks/tts.sh"; } </dev/null >/dev/null 2>&1 & )
 exit 0
